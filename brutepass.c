@@ -138,12 +138,7 @@ int main() {
     while (fgets(password, MAX_PASSWORD_LENGTH, file) != NULL) {
         password[strcspn(password, "\n")] = 0; // Удаляем символ новой строки
 
-        // Проверка на пустой пароль
-        if (strlen(password) == 0) {
-            printf(RED "Ввод пустого пароля. Остановка программы.\n" RESET);
-            break; // Останавливаем выполнение программы
-        }
-
+        // Убираем проверку на пустой пароль
         printf("Пробуем пароль: %s\n", password);
         brute_force(protocol, ip, username, password);
         sleep(1); // Задержка в 1 секунду
