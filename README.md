@@ -8,3 +8,7 @@ sudo apt-get update
 sudo apt-get install build-essential
 
 gcc -o brutepass brutepass.c -lssh2 -lmysqlclient
+
+Запуск
+
+./brutepass
